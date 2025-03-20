@@ -4,12 +4,17 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from './models/User.js'; 
-import authMiddleware from './middleware/authMiddleware.js'
+import authMiddleware from './middleware/authMiddleware.js';
+import productRoutes from './routes/productRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
 
 dotenv.config();  // Load environment variables
 
 const app = express();
 app.use(express.json());
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+
 
 mongoose.connect(process.env.MONGO_URI, {
 }).then(() => console.log("Connected to MongoDB"))
