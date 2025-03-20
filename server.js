@@ -19,6 +19,10 @@ app.get('/', (req, res) => {
     res.send('Welcome to the Server! 🚀');
 });
 
+app.get('/dashboard', authMiddleware, async (req, res) => {
+    res.json({ message:`Welcome to your dashboard, user ${req.user.id}!`})
+})
+
 app.get('/profile', authMiddleware, async (req, res) => {
     const user = await User.findById(req.user.id);
     if (!user) {
