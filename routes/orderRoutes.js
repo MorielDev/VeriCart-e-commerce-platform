@@ -14,28 +14,51 @@ router.get('/my-orders', authMiddleware, async (req, res) => {
 //  POST: Place a new order
 router.post('/', authMiddleware, async (req, res) => {
     try {
+        console.log("FULL REQUEST BODY:", req.body);  // Debugging Step
+
+        if (!req.body || typeof req.body !== 'object') {
+            console.log(" Request body is missing or not an object");
+            return res.status(400).json({ message: "Invalid request body" });
+        }
+
+        if (!req.body.products || !Array.isArray(req.body.products) || req.body.products.length === 0) {
+            console.log(" No products found in request!");
+            return res.status(400).json({ message: "No products in order" });
+        }
+
         const { products } = req.body;
         let totalPrice = 0;
 
         for (const item of products) {
+            console.log(` Checking Product: ${item.productId}`);  // Debugging Step
+
             const product = await Product.findById(item.productId);
-            if (!product) return res.status(404).json({ message: `Product ${item.productId} not found` });
+            if (!product) {
+                console.log(` Product ${item.productId} not found!`);
+                return res.status(404).json({ message: `Product ${item.productId} not found` });
+            }
 
             totalPrice += product.price * item.quantity;
         }
 
+        console.log(" All Products Verified. Creating Order...");
+
         const newOrder = new Order({
             user: req.user.id,
             products,
-            totalPrice,
+            totalPrice
         });
 
         await newOrder.save();
-        res.status(201).json({ message: "Order placed successfully!" });
+        console.log(" Order Placed Successfully!");
+
+        res.status(201).json({ message: "Order placed successfully!", order: newOrder });
     } catch (error) {
-        res.status(500).json({ message: "Error placing order" });
+        console.error(" Error Placing Order:", error);
+        res.status(500).json({ message: "Error placing order", error: error.message });
     }
 });
+
 
 //  GET: Admin - View all orders
 router.get('/', authMiddleware, async (req, res) => {
