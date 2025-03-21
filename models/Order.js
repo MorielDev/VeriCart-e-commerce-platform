@@ -2,12 +2,12 @@ import mongoose from 'mongoose';
 import User from './User.js';
 
 const OrderSchema = new mongoose.Schema({
-    User: { 
+    user: { 
         type: mongoose.Schema.Types.ObjectId, 
         required: true,
         ref: User 
     },
-    product: [
+    products: [
         {
             productId: {
                 type: mongoose.Schema.Types.ObjectId,
@@ -33,7 +33,7 @@ const OrderSchema = new mongoose.Schema({
     },
     createdAt: { 
         type:Date, 
-        required: true
+        default: Date.now
     }
 });
 
