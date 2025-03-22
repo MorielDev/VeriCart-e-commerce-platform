@@ -1,5 +1,6 @@
 import express from 'express';
 import Order from '../models/Order.js';
+import amqp from 'amqplib';
 import Product from '../models/Product.js';
 import authMiddleware from '../middleware/authMiddleware.js';
 
