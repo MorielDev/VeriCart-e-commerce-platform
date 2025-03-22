@@ -4,6 +4,8 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import User from './models/User.js'; 
+import { connectRabbitMQ } from './utils/rabbitmq.js';
+import { consumeOrders } from './consumers/orderConsumer.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -80,5 +82,7 @@ try {
 } catch (error) {
     res.status(500).json({ error: 'Login failed' });
     }
+
+connectRabbitMQ().then(consumeOrders);
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
