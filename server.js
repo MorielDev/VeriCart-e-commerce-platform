@@ -7,6 +7,7 @@ import User from './models/User.js';
 import authMiddleware from './middleware/authMiddleware.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 
 dotenv.config();  // Load environment variables
 
@@ -14,6 +15,7 @@ const app = express();
 app.use(express.json());
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
+app.use('/api/payments', paymentRoutes);
 
 
 mongoose.connect(process.env.MONGO_URI, {
