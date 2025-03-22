@@ -14,7 +14,12 @@ const authMiddleware = async (req, res, next) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        req.user = user;
+        req.user = user;  
+
+        if (!req.user.isAdmin) {  
+            return res.status(403).json({ message: "Access denied. Admins only." });
+        }
+
         next();
     } catch (error) {
         if (error.name === "TokenExpiredError") {
