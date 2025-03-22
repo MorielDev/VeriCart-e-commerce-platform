@@ -28,7 +28,7 @@ const OrderSchema = new mongoose.Schema({
     },
     status: {
         type: String,
-        enum: ['Pending', 'Shipped', 'Delivered'],  // Restricts values
+        enum: ['Pending', 'Paid', 'Shipped', 'Delivered'],  // Restricts values
         default: 'Pending'  //  All new orders start as "Pending"
     },
     createdAt: { 
