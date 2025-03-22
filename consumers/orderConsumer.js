@@ -22,4 +22,4 @@ const consumeOrders = async () => {
     }
 };
 
-consumeOrders();
+export { consumeOrders };

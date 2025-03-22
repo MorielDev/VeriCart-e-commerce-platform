@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken';
 import User from './models/User.js'; 
 import { connectRabbitMQ } from './utils/rabbitmq.js';
 import { consumeOrders } from './consumers/orderConsumer.js';
+
 import authMiddleware from './middleware/authMiddleware.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
@@ -19,33 +20,18 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/payments', paymentRoutes);
 
-
-mongoose.connect(process.env.MONGO_URI, {
-}).then(() => console.log("Connected to MongoDB"))
-.catch(err => console.log("MongoDB Connection Error:", err));
+mongoose.connect(process.env.MONGO_URI, {})
+    .then(() => console.log(" Connected to MongoDB"))
+    .catch(err => console.error(" MongoDB Connection Error:", err));
 
 app.get('/', (req, res) => {
     res.send('Welcome to the Server! 🚀');
 });
 
-app.get('/dashboard', authMiddleware, async (req, res) => {
-    res.json({ message:`Welcome to your dashboard, user ${req.user.id}!`})
-})
-
-app.get('/profile', authMiddleware, async (req, res) => {
-    const user = await User.findById(req.user.id);
-    if (!user) {
-        return res.status(404).json({ message: "User not found" });
-    }
-    res.json({ username: user.username, email: user.email });
-});
-
-
 // Register Route
 app.post('/register', async (req, res) => {  
     const { username, email, password } = req.body;
 
-    console.log ("Recieved Data:", req.body);
     if (!password) {
         return res.status(400).json({ message: "Password is required" });
     }
@@ -60,7 +46,6 @@ app.post('/register', async (req, res) => {
     await newUser.save();
 
     res.status(201).json({ message: "User registered successfully!" });
-    
 });
 
 // Login Route
@@ -78,11 +63,8 @@ app.post('/login', async (req, res) => {
     res.json({ token, message: "Login successful!" });
 });
 
-try {
-} catch (error) {
-    res.status(500).json({ error: 'Login failed' });
-    }
-
+// Connect to RabbitMQ & Consume Messages
 connectRabbitMQ().then(consumeOrders);
+
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(` Server running on port ${PORT}`));
